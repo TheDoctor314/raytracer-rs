@@ -8,6 +8,11 @@ fn xyz() {
     assert_relative_eq!(a.x(), 3.);
     assert_relative_eq!(a.y(), -2.);
     assert_relative_eq!(a.z(), 5.);
+
+    let a = Point3::new(3., -2., 5.);
+    assert_relative_eq!(a.x(), 3.);
+    assert_relative_eq!(a.y(), -2.);
+    assert_relative_eq!(a.z(), 5.);
 }
 #[test]
 fn add() {
