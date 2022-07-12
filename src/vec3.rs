@@ -11,12 +11,72 @@ impl Point3 {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Vec3([f32; 4]);
 
 impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self([x, y, z, 0.0])
+    }
+
+    pub fn x(&self) -> f32 {
+        self.0[0]
+    }
+
+    pub fn y(&self) -> f32 {
+        self.0[1]
+    }
+
+    pub fn z(&self) -> f32 {
+        self.0[2]
+    }
+
+    pub fn mag(&self) -> f32 {
+        self.mag_sq().sqrt()
+    }
+
+    pub fn mag_sq(&self) -> f32 {
+        self.0.into_iter().map(|v| v * v).sum()
+    }
+
+    pub fn normalize(&self) -> Self {
+        let mut clone = *self;
+        clone.normalized();
+
+        clone
+    }
+
+    pub fn normalized(&mut self) {
+        let mag = self.mag();
+        let (_, slice) = self.0.split_last_mut().unwrap();
+
+        for v in slice {
+            *v /= mag;
+        }
+    }
+
+    pub fn dot(&self, rhs: Self) -> f32 {
+        let lhs = &self.0;
+        let rhs = &rhs.0;
+
+        lhs.iter().zip(rhs.iter()).map(|(l, r)| l * r).sum()
+    }
+
+    pub fn cross(&self, rhs: Self) -> Self {
+        let ax = self.x();
+        let ay = self.y();
+        let az = self.z();
+
+        let bx = rhs.x();
+        let by = rhs.y();
+        let bz = rhs.z();
+
+        let mut res: Vec3 = Default::default();
+        res.0[0] = ay * bz - az * by;
+        res.0[1] = az * bx - ax * bz;
+        res.0[2] = ax * by - ay * bx;
+
+        res
     }
 }
 
@@ -92,6 +152,63 @@ impl ops::Sub for Vec3 {
         }
 
         Self(*lhs)
+    }
+}
+
+impl ops::Neg for Point3 {
+    type Output = Point3;
+    fn neg(mut self) -> Self::Output {
+        let inner = &mut self.0;
+        inner[0] = -inner[0];
+        inner[1] = -inner[1];
+        inner[2] = -inner[2];
+
+        self
+    }
+}
+
+impl ops::Neg for Vec3 {
+    type Output = Vec3;
+    fn neg(mut self) -> Self::Output {
+        let inner = &mut self.0;
+        inner[0] = -inner[0];
+        inner[1] = -inner[1];
+        inner[2] = -inner[2];
+
+        self
+    }
+}
+
+impl ops::Mul<f32> for Vec3 {
+    type Output = Vec3;
+    fn mul(mut self, rhs: f32) -> Self::Output {
+        let inner = &mut self.0;
+        inner[0] *= rhs;
+        inner[1] *= rhs;
+        inner[2] *= rhs;
+
+        self
+    }
+}
+
+impl ops::Div<f32> for Vec3 {
+    type Output = Vec3;
+    fn div(self, rhs: f32) -> Self::Output {
+        let recip = rhs.recip();
+        self * recip
+    }
+}
+
+impl ops::Index<usize> for Vec3 {
+    type Output = f32;
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::IndexMut<usize> for Vec3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.0[index]
     }
 }
 
