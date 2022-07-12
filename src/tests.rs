@@ -1,4 +1,7 @@
-use crate::vec3::{Point3, Vec3};
+use crate::{
+    vec3::{Point3, Vec3},
+    Color,
+};
 use approx::assert_relative_eq;
 
 #[test]
@@ -69,10 +72,10 @@ fn neg() {
 fn mul_div() {
     let v = Vec3::new(1., -2., 3.);
 
-    assert_relative_eq!(v * 3.5,  Vec3::new(3.5, -7., 10.5));
-    assert_relative_eq!(v * 0.5,  Vec3::new(0.5, -1., 1.5));
+    assert_relative_eq!(v * 3.5, Vec3::new(3.5, -7., 10.5));
+    assert_relative_eq!(v * 0.5, Vec3::new(0.5, -1., 1.5));
 
-    assert_relative_eq!(v / 2.,  Vec3::new(0.5, -1., 1.5));
+    assert_relative_eq!(v / 2., Vec3::new(0.5, -1., 1.5));
 }
 
 #[test]
@@ -86,7 +89,10 @@ fn magnitude() {
 #[test]
 fn normalize() {
     assert_relative_eq!(Vec3::new(4.0, 0.0, 0.0).normalize(), Vec3::new(1.0, 0., 0.));
-    assert_relative_eq!(Vec3::new(1.0, 2.0, 3.0).normalize(), Vec3::new(1.0 / 14f32.sqrt(), 2. / 14f32.sqrt(), 3. / 14f32.sqrt()));
+    assert_relative_eq!(
+        Vec3::new(1.0, 2.0, 3.0).normalize(),
+        Vec3::new(1.0 / 14f32.sqrt(), 2. / 14f32.sqrt(), 3. / 14f32.sqrt())
+    );
 }
 
 #[test]
@@ -104,4 +110,21 @@ fn cross() {
 
     assert_relative_eq!(a.cross(b), Vec3::new(-1., 2., -1.));
     assert_relative_eq!(b.cross(a), Vec3::new(1., -2., 1.));
+}
+
+#[test]
+fn color() {
+    let a: Color = [0.9, 0.6, 0.75].into();
+    let b: Color = [0.7, 0.1, 0.25].into();
+
+    assert_relative_eq!(a + b, [1.6, 0.7, 1.0].into());
+    assert_relative_eq!(a - b, [0.2, 0.5, 0.5].into());
+
+    let c: Color = [0.2, 0.3, 0.4].into();
+    assert_relative_eq!(c * 2.0, [0.4, 0.6, 0.8].into());
+
+    let a: Color = [1.0, 0.2, 0.4].into();
+    let b: Color = [0.9, 1.0, 0.1].into();
+
+    assert_relative_eq!(a.blend(b), [0.9, 0.2, 0.04].into());
 }
