@@ -1,3 +1,4 @@
+pub mod matrix;
 pub mod vec3;
 
 use std::ops;
