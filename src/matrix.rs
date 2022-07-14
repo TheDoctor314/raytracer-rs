@@ -45,9 +45,38 @@ impl Mat4 {
         *self = self.transpose();
     }
 
+    pub fn determinant(&self) -> f32 {
+        let [m00, m01, m02, m03] = self.rows[0];
+        let [m10, m11, m12, m13] = self.rows[1];
+        let [m20, m21, m22, m23] = self.rows[2];
+        let [m30, m31, m32, m33] = self.rows[3];
+
+        // compute the determinant of the 2x2 matrices required
+        let d22_33 = det2x2([[m22, m23], [m32, m33]]);
+        let d21_33 = det2x2([[m21, m23], [m31, m33]]);
+        let d21_32 = det2x2([[m21, m22], [m31, m32]]);
+        let d20_33 = det2x2([[m20, m23], [m30, m33]]);
+        let d20_32 = det2x2([[m20, m22], [m30, m32]]);
+        let d20_31 = det2x2([[m20, m21], [m30, m31]]);
+
+        // compute the determinant of the 3x3 matrices
+        m00 * (m11 * d22_33 - m12 * d21_33 + m13 * d21_32)
+            - m01 * (m10 * d22_33 - m12 * d20_33 + m13 * d20_32)
+            + m02 * (m10 * d21_33 - m11 * d20_33 + m13 * d20_31)
+            - m03 * (m10 * d21_32 - m11 * d20_32 + m12 * d20_31)
+    }
+
+    pub fn inverse(&self) -> Option<Self> {
+        todo!()
+    }
+
     pub fn iter(&self) -> impl Iterator<Item = &f32> {
         self.rows.iter().flatten()
     }
+}
+
+fn det2x2(mat: [[f32; 2]; 2]) -> f32 {
+    mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]
 }
 
 impl From<[[f32; 4]; 4]> for Mat4 {
