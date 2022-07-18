@@ -227,7 +227,7 @@ impl ops::IndexMut<usize> for Vec3 {
 impl AbsDiffEq for Point3 {
     type Epsilon = <f32 as AbsDiffEq>::Epsilon;
     fn default_epsilon() -> Self::Epsilon {
-        f32::default_epsilon()
+        0.0001
     }
 
     fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
@@ -260,7 +260,7 @@ impl RelativeEq for Point3 {
 impl AbsDiffEq for Vec3 {
     type Epsilon = <f32 as AbsDiffEq>::Epsilon;
     fn default_epsilon() -> Self::Epsilon {
-        f32::default_epsilon()
+        0.0001
     }
 
     fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {
