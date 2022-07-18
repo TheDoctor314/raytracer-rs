@@ -42,6 +42,12 @@ impl ops::IndexMut<usize> for Point3 {
     }
 }
 
+impl From<(f32, f32, f32)> for Point3 {
+    fn from((x, y, z): (f32, f32, f32)) -> Self {
+        Self::new(x, y, z)
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Vec3([f32; 4]);
 
@@ -108,6 +114,12 @@ impl Vec3 {
         res.0[2] = ax * by - ay * bx;
 
         res
+    }
+}
+
+impl From<(f32, f32, f32)> for Vec3 {
+    fn from((x, y, z): (f32, f32, f32)) -> Self {
+        Self::new(x, y, z)
     }
 }
 
