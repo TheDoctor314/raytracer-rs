@@ -2,7 +2,7 @@ use std::ops;
 
 use approx::{AbsDiffEq, RelativeEq};
 
-use crate::vec3::Vec3;
+use crate::vec3::{Point3, Vec3};
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Mat4 {
@@ -178,6 +178,22 @@ impl ops::Mul<&Mat4> for &Mat4 {
 impl ops::Mul<Vec3> for &Mat4 {
     type Output = Vec3;
     fn mul(self, rhs: Vec3) -> Self::Output {
+        let mut out: Self::Output = Default::default();
+
+        for row in 0..4 {
+            out[row] = self[(row, 0)] * rhs[0]
+                + self[(row, 1)] * rhs[1]
+                + self[(row, 2)] * rhs[2]
+                + self[(row, 3)] * rhs[3];
+        }
+
+        out
+    }
+}
+
+impl ops::Mul<Point3> for &Mat4 {
+    type Output = Point3;
+    fn mul(self, rhs: Point3) -> Self::Output {
         let mut out: Self::Output = Default::default();
 
         for row in 0..4 {

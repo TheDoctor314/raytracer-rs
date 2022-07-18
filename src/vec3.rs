@@ -23,6 +23,25 @@ impl Point3 {
     }
 }
 
+impl Default for Point3 {
+    fn default() -> Self {
+        Self([0.0, 0.0, 0.0, 1.0])
+    }
+}
+
+impl ops::Index<usize> for Point3 {
+    type Output = f32;
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
+
+impl ops::IndexMut<usize> for Point3 {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.0[index]
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Vec3([f32; 4]);
 

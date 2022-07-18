@@ -1,4 +1,7 @@
-use crate::{matrix::Mat4, vec3::Vec3};
+use crate::{
+    matrix::Mat4,
+    vec3::{Point3, Vec3},
+};
 use approx::assert_relative_eq;
 
 #[test]
@@ -60,6 +63,9 @@ fn mul() {
     let b = Vec3::new(1., 2., 3.);
 
     assert_relative_eq!(&a * b, Vec3::new(14., 22., 32.));
+
+    let b = Point3::new(1., 2., 3.);
+    assert_relative_eq!(&a * b, Point3::new(18., 24., 33.));
 }
 
 #[test]
