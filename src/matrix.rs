@@ -145,6 +145,27 @@ impl Mat4 {
     pub fn iter(&self) -> impl Iterator<Item = &f32> {
         self.rows.iter().flatten()
     }
+
+    pub fn new_translation(translation: Vec3) -> Self {
+        let mut res = Self::identity();
+
+        res[(0, 3)] = translation.x();
+        res[(1, 3)] = translation.y();
+        res[(2, 3)] = translation.z();
+
+        res
+    }
+
+    pub fn new_scaling(scaling: Vec3) -> Self {
+        let mut res: Mat4 = Default::default();
+
+        res[(0, 0)] = scaling.x();
+        res[(1, 1)] = scaling.y();
+        res[(2, 2)] = scaling.z();
+        res[(3, 3)] = 1.0;
+
+        res
+    }
 }
 
 fn det2x2(mat: [[f32; 2]; 2]) -> f32 {

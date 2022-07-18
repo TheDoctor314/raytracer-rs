@@ -233,3 +233,34 @@ fn inverse() {
     let c = &a * &b;
     assert_relative_eq!(&c * &b.inverse().unwrap(), a);
 }
+
+#[test]
+fn translation() {
+    let transform = Mat4::new_translation((5., -3., 2.).into());
+    let inv = transform.inverse().unwrap();
+
+    let p = Point3::new(-3., 4., 5.);
+    let v = Vec3::new(-3.0, 4.0, 5.0);
+
+    assert_relative_eq!(&transform * p, (2., 1., 7.).into());
+    assert_relative_eq!(&inv * p, (-8., 7., 3.).into());
+
+    assert_relative_eq!(&transform * v, v);
+}
+
+#[test]
+fn scaling() {
+    let transform = Mat4::new_scaling((2., 3., 4.).into());
+    let inv = transform.inverse().unwrap();
+
+    let p = Point3::new(-4., 6., 8.);
+    let v = Vec3::new(-4., 6., 8.);
+
+    assert_relative_eq!(&transform * p, (-8., 18., 32.).into());
+    assert_relative_eq!(&transform * v, (-8., 18., 32.).into());
+
+    assert_relative_eq!(&inv * v, (-2., 2., 2.).into());
+
+    let transform = Mat4::new_scaling((-1., 1., 1.).into());
+    assert_relative_eq!(&transform * Point3::new(2., 3., 4.), (-2., 3., 4.).into());
+}
