@@ -67,7 +67,79 @@ impl Mat4 {
     }
 
     pub fn inverse(&self) -> Option<Self> {
-        todo!()
+        let [m00, m01, m02, m03] = self.rows[0];
+        let [m10, m11, m12, m13] = self.rows[1];
+        let [m20, m21, m22, m23] = self.rows[2];
+        let [m30, m31, m32, m33] = self.rows[3];
+
+        let mut res: Mat4 = Default::default();
+        res[(0, 0)] = m11 * (m22 * m33 - m23 * m32) - m12 * (m21 * m33 - m23 * m31)
+            + m13 * (m21 * m32 - m22 * m31);
+
+        res[(1, 0)] = -m10 * (m22 * m33 - m23 * m32) + m12 * (m20 * m33 - m23 * m30)
+            - m13 * (m20 * m32 - m22 * m30);
+
+        res[(2, 0)] = m10 * (m21 * m33 - m23 * m31) - m11 * (m20 * m33 - m23 * m30)
+            + m13 * (m20 * m31 - m21 * m30);
+
+        res[(3, 0)] = -m10 * (m21 * m32 - m22 * m31) + m11 * (m20 * m32 - m22 * m30)
+            - m12 * (m20 * m31 - m21 * m30);
+
+        res[(0, 1)] = -m01 * (m22 * m33 - m23 * m32) + m02 * (m21 * m33 - m23 * m31)
+            - m03 * (m21 * m32 - m22 * m31);
+
+        res[(1, 1)] = m00 * (m22 * m33 - m23 * m32) - m02 * (m20 * m33 - m23 * m30)
+            + m03 * (m20 * m32 - m22 * m30);
+
+        res[(2, 1)] = -m00 * (m21 * m33 - m23 * m31) + m01 * (m20 * m33 - m23 * m30)
+            - m03 * (m20 * m31 - m21 * m30);
+
+        res[(3, 1)] = m00 * (m21 * m32 - m22 * m31) - m01 * (m20 * m32 - m22 * m30)
+            + m02 * (m20 * m31 - m21 * m30);
+
+        res[(0, 2)] = m01 * (m12 * m33 - m13 * m32) - m02 * (m11 * m33 - m13 * m31)
+            + m03 * (m11 * m32 - m12 * m31);
+
+        res[(1, 2)] = -m00 * (m12 * m33 - m13 * m32) + m02 * (m10 * m33 - m13 * m30)
+            - m03 * (m10 * m32 - m12 * m30);
+
+        res[(2, 2)] = m00 * (m11 * m33 - m13 * m31) - m01 * (m10 * m33 - m13 * m30)
+            + m03 * (m10 * m31 - m11 * m30);
+
+        res[(3, 2)] = -m00 * (m11 * m32 - m12 * m31) + m01 * (m10 * m32 - m12 * m30)
+            - m02 * (m10 * m31 - m11 * m30);
+
+        res[(0, 3)] = -m01 * (m12 * m23 - m13 * m22) + m02 * (m11 * m23 - m13 * m21)
+            - m03 * (m11 * m22 - m12 * m21);
+
+        res[(1, 3)] = m00 * (m12 * m23 - m13 * m22) - m02 * (m10 * m23 - m13 * m20)
+            + m03 * (m10 * m22 - m12 * m20);
+
+        res[(2, 3)] = -m00 * (m11 * m23 - m13 * m21) + m01 * (m10 * m23 - m13 * m20)
+            - m03 * (m10 * m21 - m11 * m20);
+
+        res[(3, 3)] = m00 * (m11 * m22 - m12 * m21) - m01 * (m10 * m22 - m12 * m20)
+            + m02 * (m10 * m21 - m11 * m20);
+
+        // res now contains the adjugate matrix.
+        // we determine the determinant from the first row of the input matrix
+        // and the first column of the adjugate.
+        let det = self[(0, 0)] * res[(0, 0)]
+            + self[(0, 1)] * res[(1, 0)]
+            + self[(0, 2)] * res[(2, 0)]
+            + self[(0, 3)] * res[(3, 0)];
+
+        if det == 0.0 {
+            return None;
+        }
+
+        for i in 0..4 {
+            for j in 0..4 {
+                res[(i, j)] /= det;
+            }
+        }
+
+        Some(res)
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &f32> {
