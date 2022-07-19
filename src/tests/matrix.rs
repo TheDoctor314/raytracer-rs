@@ -264,3 +264,92 @@ fn scaling() {
     let transform = Mat4::new_scaling((-1., 1., 1.).into());
     assert_relative_eq!(&transform * Point3::new(2., 3., 4.), (-2., 3., 4.).into());
 }
+
+#[test]
+fn rotation() {
+    use std::f32::consts;
+
+    // around the x-axis
+    let p: Point3 = (0., 1., 0.).into();
+    let half_quarter = Mat4::new_rotation_x(consts::FRAC_PI_4);
+    let full_quarter = Mat4::new_rotation_x(consts::FRAC_PI_2);
+
+    assert_relative_eq!(
+        &half_quarter * p,
+        (0., 2.0f32.sqrt().recip(), 2.0f32.sqrt().recip()).into()
+    );
+    assert_relative_eq!(
+        &half_quarter.inverse().unwrap() * p,
+        (0., 2.0f32.sqrt().recip(), -(2.0f32.sqrt().recip())).into()
+    );
+
+    assert_relative_eq!(&full_quarter * p, (0., 0., 1.).into());
+
+    // around the y-axis
+    let p: Point3 = (0., 0., 1.).into();
+    let half_quarter = Mat4::new_rotation_y(consts::FRAC_PI_4);
+    let full_quarter = Mat4::new_rotation_y(consts::FRAC_PI_2);
+
+    assert_relative_eq!(
+        &half_quarter * p,
+        (2.0f32.sqrt().recip(), 0., 2.0f32.sqrt().recip()).into()
+    );
+
+    assert_relative_eq!(&full_quarter * p, (1., 0., 0.).into());
+
+    // around the z-axis
+    let p: Point3 = (0., 1., 0.).into();
+    let half_quarter = Mat4::new_rotation_z(consts::FRAC_PI_4);
+    let full_quarter = Mat4::new_rotation_z(consts::FRAC_PI_2);
+
+    assert_relative_eq!(
+        &half_quarter * p,
+        (-(2.0f32.sqrt().recip()), 2.0f32.sqrt().recip(), 0.).into()
+    );
+
+    assert_relative_eq!(&full_quarter * p, (-1., 0., 0.).into());
+}
+
+#[test]
+fn shearing() {
+    let transform = Mat4::new_shearing(1., 0., 0., 0., 0., 0.);
+    let p: Point3 = (2., 3., 4.).into();
+
+    assert_relative_eq!(&transform * p, (5., 3., 4.).into());
+
+    let transform = Mat4::new_shearing(0., 1., 0., 0., 0., 0.);
+    assert_relative_eq!(&transform * p, (6., 3., 4.).into());
+
+    let transform = Mat4::new_shearing(0., 0., 1., 0., 0., 0.);
+    assert_relative_eq!(&transform * p, (2., 5., 4.).into());
+
+    let transform = Mat4::new_shearing(0., 0., 0., 1., 0., 0.);
+    assert_relative_eq!(&transform * p, (2., 7., 4.).into());
+
+    let transform = Mat4::new_shearing(0., 0., 0., 0., 1., 0.);
+    assert_relative_eq!(&transform * p, (2., 3., 6.).into());
+
+    let transform = Mat4::new_shearing(0., 0., 0., 0., 0., 1.);
+    assert_relative_eq!(&transform * p, (2., 3., 7.).into());
+}
+
+#[test]
+fn chained_transforms() {
+    let p: Point3 = (1., 0., 1.).into();
+
+    let a = Mat4::new_rotation_x(std::f32::consts::FRAC_PI_2);
+    let b = Mat4::new_scaling((5., 5., 5.).into());
+    let c = Mat4::new_translation((10., 5., 7.).into());
+
+    let p2 = &a * p;
+    assert_relative_eq!(p2, (1., -1., 0.).into());
+
+    let p3 = &b * p2;
+    assert_relative_eq!(p3, (5., -5., 0.).into());
+
+    let p4 = &c * p3;
+    assert_relative_eq!(p4, (15., 0., 7.).into());
+
+    let transform = &c * &(&b * &a);
+    assert_relative_eq!(&transform * p, p4);
+}

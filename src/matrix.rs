@@ -166,6 +166,64 @@ impl Mat4 {
 
         res
     }
+
+    pub fn new_rotation_x(angle: f32) -> Self {
+        let (sin, cos) = angle.sin_cos();
+
+        let mut res: Mat4 = Default::default();
+
+        res[(0, 0)] = 1.0;
+        res[(1, 1)] = cos;
+        res[(1, 2)] = -sin;
+        res[(2, 1)] = sin;
+        res[(2, 2)] = cos;
+        res[(3, 3)] = 1.0;
+
+        res
+    }
+
+    pub fn new_rotation_y(angle: f32) -> Self {
+        let (sin, cos) = angle.sin_cos();
+
+        let mut res: Mat4 = Default::default();
+
+        res[(0, 0)] = cos;
+        res[(0, 2)] = sin;
+        res[(1, 1)] = 1.0;
+        res[(2, 0)] = -sin;
+        res[(2, 2)] = cos;
+        res[(3, 3)] = 1.0;
+
+        res
+    }
+
+    pub fn new_rotation_z(angle: f32) -> Self {
+        let (sin, cos) = angle.sin_cos();
+
+        let mut res: Mat4 = Default::default();
+
+        res[(0, 0)] = cos;
+        res[(0, 1)] = -sin;
+        res[(1, 0)] = sin;
+        res[(1, 1)] = cos;
+        res[(2, 2)] = 1.0;
+        res[(3, 3)] = 1.0;
+
+        res
+    }
+
+    pub fn new_shearing(dx_y: f32, dx_z: f32, dy_x: f32, dy_z: f32, dz_x: f32, dz_y: f32) -> Self {
+        let mut res = Mat4::identity();
+
+        res[(0, 1)] = dx_y;
+        res[(0, 2)] = dx_z;
+        res[(1, 0)] = dy_x;
+        res[(1, 2)] = dy_z;
+        res[(2, 0)] = dz_x;
+        res[(2, 1)] = dz_y;
+
+        res
+    }
 }
 
 fn det2x2(mat: [[f32; 2]; 2]) -> f32 {
