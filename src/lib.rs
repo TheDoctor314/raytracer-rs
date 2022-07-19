@@ -14,10 +14,10 @@ impl Color {
     }
 
     pub fn blend(&self, rhs: Self) -> Self {
-        let mut clone = self.clone();
+        let mut clone = *self;
 
         for i in 0..3 {
-            clone.0[i] = self.0[i] * rhs.0[i];
+            clone.0[i] *= rhs.0[i];
         }
 
         clone
