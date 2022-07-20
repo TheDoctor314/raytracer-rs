@@ -9,8 +9,9 @@
 //!
 //! We also forgo const-generics in favour of simplicity because of minimal requirements.
 
-#![warn(clippy::missing_docs_in_private_items)]
+// #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 pub mod matrix;
+pub mod ray;
 pub mod vec3;
 
 use std::ops;

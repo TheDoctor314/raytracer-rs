@@ -3,6 +3,7 @@
 //! is not recompiled for running tests.
 
 mod matrix;
+mod ray;
 mod vec3;
 
 use approx::assert_relative_eq;
