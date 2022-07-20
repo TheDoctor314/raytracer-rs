@@ -1,3 +1,15 @@
+//! # Raytracer-rs
+//! This library implements a raytracer following the excellent tutorial
+//! `The Ray Tracer Challenge`.
+
+//!
+//! # Design decisions
+//! The 3d-coordinate system uses the left-handed convention.
+//! This convention was chosen because of the convention in the tutorial.
+//!
+//! We also forgo const-generics in favour of simplicity because of minimal requirements.
+
+#![warn(clippy::missing_docs_in_private_items)]
 pub mod matrix;
 pub mod vec3;
 
@@ -5,14 +17,18 @@ use std::ops;
 
 pub use approx::relative_eq;
 
+/// Wrapper type around `image::Rgb<f32>`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Color(image::Rgb<f32>);
 
 impl Color {
+    /// Comsumes `self` and return the inner type.
     pub fn into_inner(self) -> image::Rgb<f32> {
         self.0
     }
 
+    /// Blends two `Color`s together.
+    /// Performs component-wise multiplication.
     pub fn blend(&self, rhs: Self) -> Self {
         let mut clone = *self;
 

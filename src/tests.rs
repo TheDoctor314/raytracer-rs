@@ -1,3 +1,7 @@
+//! Defines all the unit tests for this library.
+//! They are in a separate module so that the whole library
+//! is not recompiled for running tests.
+
 mod matrix;
 mod vec3;
 

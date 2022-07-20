@@ -1,23 +1,30 @@
+//! Implementation of matrices and their various operations.
 use std::ops;
 
 use approx::{AbsDiffEq, RelativeEq};
 
 use crate::vec3::{Point3, Vec3};
 
+/// Representation of a 4x4 Matrix.
+/// The elements are stored in row-major order.
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Mat4 {
+    /// Stores the rows of the matrix.
     rows: [[f32; 4]; 4],
 }
 
+/// Helper private alias for the matrix.
 type Row = [f32; 4];
 
 impl Mat4 {
+    /// Constructs a new `Mat4` from the specified rows.
     pub fn new(row0: Row, row1: Row, row2: Row, row3: Row) -> Self {
         Self {
             rows: [row0, row1, row2, row3],
         }
     }
 
+    /// Constructs the identity matrix.
     pub fn identity() -> Self {
         Self {
             rows: [
@@ -29,6 +36,7 @@ impl Mat4 {
         }
     }
 
+    /// Transposes the given matrix.
     pub fn transpose(&self) -> Self {
         let mut res = self.clone();
 
@@ -41,10 +49,12 @@ impl Mat4 {
         res
     }
 
+    /// Transposes the given matrix in-place.
     pub fn transposed(&mut self) {
         *self = self.transpose();
     }
 
+    /// Calculates the determinant of the given matrix.
     pub fn determinant(&self) -> f32 {
         let [m00, m01, m02, m03] = self.rows[0];
         let [m10, m11, m12, m13] = self.rows[1];
@@ -66,13 +76,15 @@ impl Mat4 {
             - m03 * (m10 * d21_32 - m11 * d20_32 + m12 * d20_31)
     }
 
+    /// Returns the inverse of the given matrix.
+    /// If the matrix is uninvertible, `None` is returned.
     pub fn inverse(&self) -> Option<Self> {
         let [m00, m01, m02, m03] = self.rows[0];
         let [m10, m11, m12, m13] = self.rows[1];
         let [m20, m21, m22, m23] = self.rows[2];
         let [m30, m31, m32, m33] = self.rows[3];
 
-        let mut res: Mat4 = Default::default();
+        let mut res = Self::default();
         res[(0, 0)] = m11 * (m22 * m33 - m23 * m32) - m12 * (m21 * m33 - m23 * m31)
             + m13 * (m21 * m32 - m22 * m31);
 
@@ -142,10 +154,12 @@ impl Mat4 {
         Some(res)
     }
 
+    /// Returns an iterator that gives elements in row-major order.
     pub fn iter(&self) -> impl Iterator<Item = &f32> {
         self.rows.iter().flatten()
     }
 
+    /// Constructs a translation transfrom matrix from the given `Vec3`.
     pub fn new_translation(translation: Vec3) -> Self {
         let mut res = Self::identity();
 
@@ -156,8 +170,9 @@ impl Mat4 {
         res
     }
 
+    /// Constructs a scaling transform matrix from the given `Vec3`.
     pub fn new_scaling(scaling: Vec3) -> Self {
-        let mut res: Mat4 = Default::default();
+        let mut res = Self::default();
 
         res[(0, 0)] = scaling.x();
         res[(1, 1)] = scaling.y();
@@ -167,10 +182,12 @@ impl Mat4 {
         res
     }
 
+    /// Constructs a rotation transform matrix that rotates around
+    /// the x-axis clockwise with the given angle in radians.
     pub fn new_rotation_x(angle: f32) -> Self {
         let (sin, cos) = angle.sin_cos();
 
-        let mut res: Mat4 = Default::default();
+        let mut res = Self::default();
 
         res[(0, 0)] = 1.0;
         res[(1, 1)] = cos;
@@ -182,10 +199,12 @@ impl Mat4 {
         res
     }
 
+    /// Constructs a rotation transform matrix that rotates around
+    /// the y-axis clockwise with the given angle in radians.
     pub fn new_rotation_y(angle: f32) -> Self {
         let (sin, cos) = angle.sin_cos();
 
-        let mut res: Mat4 = Default::default();
+        let mut res = Self::default();
 
         res[(0, 0)] = cos;
         res[(0, 2)] = sin;
@@ -197,10 +216,12 @@ impl Mat4 {
         res
     }
 
+    /// Constructs a rotation transform matrix that rotates around
+    /// the z-axis clockwise with the given angle in radians.
     pub fn new_rotation_z(angle: f32) -> Self {
         let (sin, cos) = angle.sin_cos();
 
-        let mut res: Mat4 = Default::default();
+        let mut res = Self::default();
 
         res[(0, 0)] = cos;
         res[(0, 1)] = -sin;
@@ -212,6 +233,7 @@ impl Mat4 {
         res
     }
 
+    /// Constructs a shearing transform matrix.
     pub fn new_shearing(dx_y: f32, dx_z: f32, dy_x: f32, dy_z: f32, dz_x: f32, dz_y: f32) -> Self {
         let mut res = Mat4::identity();
 
@@ -226,6 +248,7 @@ impl Mat4 {
     }
 }
 
+/// Helper function to calculate the determinant of 2x2 matrix.
 fn det2x2(mat: [[f32; 2]; 2]) -> f32 {
     mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]
 }

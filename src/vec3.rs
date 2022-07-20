@@ -1,23 +1,29 @@
+//! Implementation of points and vectors in 3d-spaces and operations on them.
 use std::ops;
 
 use approx::{AbsDiffEq, RelativeEq};
 
+/// Represents a point in 3d-space using homogenous coordinates.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Point3([f32; 4]);
 
 impl Point3 {
+    /// Constructs a new `Point3`.
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self([x, y, z, 1.0])
     }
 
+    /// Access the `x` coordinate of the point.
     pub fn x(&self) -> f32 {
         self.0[0]
     }
 
+    /// Access the `y` coordinate of the point.
     pub fn y(&self) -> f32 {
         self.0[1]
     }
 
+    /// Access the `z` coordinate of the point.
     pub fn z(&self) -> f32 {
         self.0[2]
     }
@@ -48,34 +54,43 @@ impl From<(f32, f32, f32)> for Point3 {
     }
 }
 
+/// Represents a vector in 3d-space using homogenous coordinates.
 #[derive(Debug, Clone, Copy, PartialEq, Default)]
 pub struct Vec3([f32; 4]);
 
 impl Vec3 {
+    /// Constructs a new `Vec3`.
     pub fn new(x: f32, y: f32, z: f32) -> Self {
         Self([x, y, z, 0.0])
     }
 
+    /// Access the `x` coordinate of the point.
     pub fn x(&self) -> f32 {
         self.0[0]
     }
 
+    /// Access the `y` coordinate of the point.
     pub fn y(&self) -> f32 {
         self.0[1]
     }
 
+    /// Access the `z` coordinate of the point.
     pub fn z(&self) -> f32 {
         self.0[2]
     }
 
+    /// Returns the magnitude of the vector.
     pub fn mag(&self) -> f32 {
         self.mag_sq().sqrt()
     }
 
+    /// Returns the magnitude squared of the vector.
     pub fn mag_sq(&self) -> f32 {
         self.0.into_iter().map(|v| v * v).sum()
     }
 
+    /// Returns the normalized vector i.e. a vector of unit length
+    /// with the same direction.
     pub fn normalize(&self) -> Self {
         let mut clone = *self;
         clone.normalized();
@@ -83,6 +98,7 @@ impl Vec3 {
         clone
     }
 
+    /// Normalizes the vector in-place.
     pub fn normalized(&mut self) {
         let mag = self.mag();
         let (_, slice) = self.0.split_last_mut().unwrap();
@@ -92,6 +108,7 @@ impl Vec3 {
         }
     }
 
+    /// Returns the dot product of the given vectors.
     pub fn dot(&self, rhs: Self) -> f32 {
         let lhs = &self.0;
         let rhs = &rhs.0;
@@ -99,6 +116,7 @@ impl Vec3 {
         lhs.iter().zip(rhs.iter()).map(|(l, r)| l * r).sum()
     }
 
+    /// Returns the cross product of the given vectors.
     pub fn cross(&self, rhs: Self) -> Self {
         let ax = self.x();
         let ay = self.y();
@@ -108,7 +126,7 @@ impl Vec3 {
         let by = rhs.y();
         let bz = rhs.z();
 
-        let mut res: Vec3 = Default::default();
+        let mut res = Vec3::default();
         res.0[0] = ay * bz - az * by;
         res.0[1] = az * bx - ax * bz;
         res.0[2] = ax * by - ay * bx;
@@ -236,9 +254,13 @@ impl ops::Mul<f32> for Vec3 {
 
 impl ops::Div<f32> for Vec3 {
     type Output = Vec3;
-    fn div(self, rhs: f32) -> Self::Output {
-        let recip = rhs.recip();
-        self * recip
+    fn div(mut self, rhs: f32) -> Self::Output {
+        let inner = &mut self.0;
+        inner[0] /= rhs;
+        inner[1] /= rhs;
+        inner[2] /= rhs;
+
+        self
     }
 }
 
