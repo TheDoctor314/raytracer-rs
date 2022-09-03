@@ -1,18 +1,24 @@
+//! Implementation of the sphere object.
+
 use crate::{
     hit_list::{HitList, HitRec},
     ray::Ray,
     vec3::Point3,
 };
 
+/// Representation of a sphere and its associated transforms.
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct Sphere {}
 
 impl Sphere {
+    /// Constructs a new `Sphere`.
     pub fn new() -> Self {
         Sphere {}
     }
 
-    pub fn intersect(&self, r: &Ray) -> HitList {
+    /// Intersect the ray with the sphere.
+    /// Returns a `HitList` which stores the point and object of intersections.
+    pub fn intersect(&self, r: &Ray) -> HitList<'_> {
         let sphere_to_ray = r.orig - Point3::new(0.0, 0.0, 0.0);
 
         let a = r.dir.dot(r.dir);

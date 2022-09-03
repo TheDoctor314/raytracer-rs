@@ -5,7 +5,7 @@ use crate::{
     vec3::{Point3, Vec3},
 };
 
-/// Representation of a ray of light.
+/// Representation of a ray.
 #[derive(Debug, Clone)]
 pub struct Ray {
     /// The point where the ray starts from.
@@ -28,6 +28,7 @@ impl Ray {
         self.orig + self.dir * t
     }
 
+    /// Transform the ray using the given transform.
     pub fn transform(&self, transform: &Mat4) -> Self {
         Self {
             orig: transform * self.orig,
