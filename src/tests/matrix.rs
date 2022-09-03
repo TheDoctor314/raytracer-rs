@@ -352,4 +352,11 @@ fn chained_transforms() {
 
     let transform = &c * &(&b * &a);
     assert_relative_eq!(&transform * p, p4);
+
+    let transform = Mat4::identity()
+        .rotate_x(std::f32::consts::FRAC_PI_2)
+        .scale((5., 5., 5.).into())
+        .translate((10., 5., 7.).into());
+
+    assert_relative_eq!(&transform * p, p4);
 }

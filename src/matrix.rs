@@ -246,6 +246,39 @@ impl Mat4 {
 
         res
     }
+
+    /// Multiply a translation transform.
+    pub fn translate(self, translation: Vec3) -> Self {
+        Self::new_translation(translation) * &self
+    }
+
+    /// Multiply a scaling transform.
+    pub fn scale(self, scaling: Vec3) -> Self {
+        Self::new_scaling(scaling) * &self
+    }
+
+    /// Multiply a transform which rotates around the x-axis clockwise
+    /// with the given angle in radians.
+    pub fn rotate_x(self, angle: f32) -> Self {
+        Self::new_rotation_x(angle) * &self
+    }
+
+    /// Multiply a transform which rotates around the y-axis clockwise
+    /// with the given angle in radians.
+    pub fn rotate_y(self, angle: f32) -> Self {
+        Self::new_rotation_y(angle) * &self
+    }
+
+    /// Multiply a transform which rotates around the z-axis clockwise
+    /// with the given angle in radians.
+    pub fn rotate_z(self, angle: f32) -> Self {
+        Self::new_rotation_z(angle) * &self
+    }
+
+    /// Multiply a shear transform.
+    pub fn shear(self, dx_y: f32, dx_z: f32, dy_x: f32, dy_z: f32, dz_x: f32, dz_y: f32) -> Self {
+        Self::new_shearing(dx_y, dx_z, dy_x, dy_z, dz_x, dz_y) * &self
+    }
 }
 
 /// Helper function to calculate the determinant of 2x2 matrix.
@@ -259,7 +292,7 @@ impl From<[[f32; 4]; 4]> for Mat4 {
     }
 }
 
-impl ops::Mul<&Mat4> for &Mat4 {
+impl ops::Mul<&Mat4> for Mat4 {
     type Output = Mat4;
     fn mul(self, rhs: &Mat4) -> Self::Output {
         let mut out: Self::Output = Default::default();
@@ -274,6 +307,12 @@ impl ops::Mul<&Mat4> for &Mat4 {
         }
 
         out
+    }
+}
+impl ops::Mul<&Mat4> for &Mat4 {
+    type Output = Mat4;
+    fn mul(self, rhs: &Mat4) -> Self::Output {
+        self.clone() * rhs
     }
 }
 
