@@ -13,6 +13,8 @@
 pub mod matrix;
 pub mod ray;
 pub mod vec3;
+pub mod sphere;
+pub mod hit_list;
 
 use std::ops;
 

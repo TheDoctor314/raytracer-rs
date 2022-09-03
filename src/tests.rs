@@ -5,6 +5,7 @@
 mod matrix;
 mod ray;
 mod vec3;
+mod sphere;
 
 use approx::assert_relative_eq;
 
