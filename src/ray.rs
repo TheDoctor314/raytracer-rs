@@ -1,6 +1,9 @@
 //! Implementation of a ray and its operations.
 
-use crate::vec3::{Point3, Vec3};
+use crate::{
+    matrix::Mat4,
+    vec3::{Point3, Vec3},
+};
 
 /// Representation of a ray of light.
 #[derive(Debug, Clone)]
@@ -23,5 +26,12 @@ impl Ray {
     /// Computes the point at a given distance `t` along the ray.
     pub fn pos(&self, t: f32) -> Point3 {
         self.orig + self.dir * t
+    }
+
+    pub fn transform(&self, transform: &Mat4) -> Self {
+        Self {
+            orig: transform * self.orig,
+            dir: transform * self.dir,
+        }
     }
 }
