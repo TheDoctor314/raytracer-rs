@@ -12,6 +12,8 @@
 #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 
 pub mod hit_list;
+pub mod lights;
+pub mod material;
 pub mod matrix;
 pub mod ray;
 pub mod sphere;
@@ -26,7 +28,10 @@ pub use approx::relative_eq;
 pub struct Color(image::Rgb<f32>);
 
 impl Color {
-    /// Comsumes `self` and return the inner type.
+    /// The color Black.
+    pub const BLACK: Color = Color(image::Rgb([0., 0., 0.]));
+
+    /// Consumes `self` and return the inner type.
     pub fn into_inner(self) -> image::Rgb<f32> {
         self.0
     }
@@ -86,7 +91,7 @@ impl ops::Mul<f32> for Color {
 impl approx::AbsDiffEq for Color {
     type Epsilon = <f32 as approx::AbsDiffEq>::Epsilon;
     fn default_epsilon() -> Self::Epsilon {
-        f32::default_epsilon()
+        0.0001
     }
 
     fn abs_diff_eq(&self, other: &Self, epsilon: Self::Epsilon) -> bool {

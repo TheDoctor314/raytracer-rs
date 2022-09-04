@@ -16,7 +16,7 @@ fn main() {
     let half_wall = wall_size / 2.0;
 
     let pixel_size = wall_size / width as f32;
-    let s = Sphere::new();
+    let s = Sphere::default();
     let ray_origin = Point3::new(0.0, 0.0, -5.0);
 
     for y in 0..width {

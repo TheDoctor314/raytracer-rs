@@ -2,10 +2,11 @@
 //! They are in a separate module so that the whole library
 //! is not recompiled for running tests.
 
+mod material;
 mod matrix;
 mod ray;
-mod vec3;
 mod sphere;
+mod vec3;
 
 use approx::assert_relative_eq;
 
