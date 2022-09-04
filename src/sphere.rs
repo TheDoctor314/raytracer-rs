@@ -2,6 +2,7 @@
 
 use crate::{
     hit_list::{HitList, HitRec},
+    material::Material,
     matrix::Mat4,
     ray::Ray,
     vec3::{Point3, Vec3},
@@ -14,14 +15,16 @@ use crate::{
 pub struct Sphere {
     transform: Mat4,
     transform_inv: Mat4,
+    material: Material,
 }
 
 impl Sphere {
     /// Constructs a new `Sphere`.
-    pub fn new() -> Self {
+    pub fn new(material: Material) -> Self {
         Self {
             transform: Mat4::identity(),
             transform_inv: Mat4::identity(),
+            material,
         }
     }
 
@@ -29,6 +32,12 @@ impl Sphere {
     pub fn with_transform(mut self, transform: Mat4) -> Self {
         self.transform_inv = transform.inverse().unwrap_or_else(Mat4::identity);
         self.transform = transform;
+        self
+    }
+
+    /// Set the material of a `Sphere`.
+    pub fn with_material(mut self, material: Material) -> Self {
+        self.material = material;
         self
     }
 
@@ -78,6 +87,6 @@ impl Sphere {
 
 impl Default for Sphere {
     fn default() -> Self {
-        Self::new()
+        Self::new(Material::default())
     }
 }
