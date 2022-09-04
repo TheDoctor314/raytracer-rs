@@ -1,5 +1,6 @@
 use crate::{
     hit_list::{HitList, HitRec},
+    matrix::Mat4,
     ray::Ray,
     sphere::Sphere,
 };
@@ -105,4 +106,22 @@ fn hit_with_t_in_random_order() {
     ]);
 
     assert_eq!(xs.hit(), Some(&HitRec { t: 2.0, obj: &s }));
+}
+
+#[test]
+fn ray_intersect_with_transformed_sphere() {
+    let r = Ray::new((0.0, 0.0, -5.0), (0.0, 0.0, 1.0));
+    let s = Sphere::new().with_transform(Mat4::new_scaling((2., 2., 2.).into()));
+
+    let xs = s.intersect(&r);
+
+    assert_eq!(xs.len(), 2);
+    assert_eq!(xs[0].t, 3.0);
+    assert_eq!(xs[1].t, 7.0);
+
+    let s = Sphere::new().with_transform(Mat4::new_translation((5., 0., 0.).into()));
+
+    let xs = s.intersect(&r);
+
+    assert!(xs.is_empty());
 }

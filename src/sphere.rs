@@ -2,23 +2,41 @@
 
 use crate::{
     hit_list::{HitList, HitRec},
+    matrix::Mat4,
     ray::Ray,
     vec3::Point3,
 };
 
-/// Representation of a sphere and its associated transforms.
-#[derive(Debug, Default, Clone, PartialEq)]
-pub struct Sphere {}
+/// Representation of a sphere and its associated transform.
+/// The default sphere is always a unit sphere at the origin.
+/// We use the transform to create different configurations of the sphere.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Sphere {
+    transform: Mat4,
+    transform_inv: Mat4,
+}
 
 impl Sphere {
     /// Constructs a new `Sphere`.
     pub fn new() -> Self {
-        Sphere {}
+        Self {
+            transform: Mat4::identity(),
+            transform_inv: Mat4::identity(),
+        }
+    }
+
+    /// Set the transform of a `Sphere`.
+    pub fn with_transform(mut self, transform: Mat4) -> Self {
+        self.transform_inv = transform.inverse().unwrap_or_else(Mat4::identity);
+        self.transform = transform;
+        self
     }
 
     /// Intersect the ray with the sphere.
     /// Returns a `HitList` which stores the point and object of intersections.
     pub fn intersect(&self, r: &Ray) -> HitList<'_> {
+        let r = r.transform(&self.transform_inv);
+
         let sphere_to_ray = r.orig - Point3::new(0.0, 0.0, 0.0);
 
         let a = r.dir.dot(r.dir);
@@ -39,5 +57,11 @@ impl Sphere {
 
             HitList::new(vec![t1, t2])
         }
+    }
+}
+
+impl Default for Sphere {
+    fn default() -> Self {
+        Self::new()
     }
 }
