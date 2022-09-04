@@ -44,7 +44,7 @@ impl Material {
         let ambient = effective_color * self.ambient;
         let light_dot_normal = lightv.dot(normal);
 
-        let (diffuse, specular) = if light_dot_normal.is_sign_negative() {
+        let (diffuse, specular) = if light_dot_normal < 0.0 {
             (Color::BLACK, Color::BLACK)
         } else {
             let diffuse = effective_color * self.diffuse * light_dot_normal;
@@ -52,7 +52,7 @@ impl Material {
             let reflectv = (-lightv).reflect(normal);
             let reflect_dot_eye = reflectv.dot(eyev);
 
-            let specular = if reflect_dot_eye.is_sign_negative() {
+            let specular = if reflect_dot_eye <= 0.0 {
                 Color::BLACK
             } else {
                 let factor = reflect_dot_eye.powf(self.shininess);
@@ -63,6 +63,32 @@ impl Material {
         };
 
         ambient + diffuse + specular
+    }
+
+    /// Sets the color.
+    pub fn with_color(mut self, color: Color) -> Self {
+        self.color = color;
+        self
+    }
+    /// Sets the color.
+    pub fn with_ambient(mut self, ambient: f32) -> Self {
+        self.ambient = ambient;
+        self
+    }
+    /// Sets the color.
+    pub fn with_diffuse(mut self, diffuse: f32) -> Self {
+        self.diffuse = diffuse;
+        self
+    }
+    /// Sets the color.
+    pub fn with_specular(mut self, specular: f32) -> Self {
+        self.specular = specular;
+        self
+    }
+    /// Sets the color.
+    pub fn with_shininess(mut self, shininess: f32) -> Self {
+        self.shininess = shininess;
+        self
     }
 }
 

@@ -83,6 +83,11 @@ impl Sphere {
 
         world_normal.normalize()
     }
+
+    /// Gets a reference to the material.
+    pub fn material(&self) -> &Material {
+        &self.material
+    }
 }
 
 impl Default for Sphere {

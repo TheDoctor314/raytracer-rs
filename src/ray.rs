@@ -35,4 +35,14 @@ impl Ray {
             dir: transform * self.dir,
         }
     }
+
+    /// Gets the origin of the ray.
+    pub fn orig(&self) -> &Point3 {
+        &self.orig
+    }
+
+    /// Gets the direction of the ray.
+    pub fn dir(&self) -> &Vec3 {
+        &self.dir
+    }
 }
