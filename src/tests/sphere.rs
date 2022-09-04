@@ -1,3 +1,7 @@
+use std::f32::consts;
+
+use approx::assert_relative_eq;
+
 use crate::{
     hit_list::{HitList, HitRec},
     matrix::Mat4,
@@ -124,4 +128,45 @@ fn ray_intersect_with_transformed_sphere() {
     let xs = s.intersect(&r);
 
     assert!(xs.is_empty());
+}
+
+#[test]
+fn normal() {
+    let s = Sphere::new();
+
+    let n = s.normal_at((1., 0., 0.).into());
+    assert_relative_eq!(n, (1., 0., 0.).into());
+
+    let n = s.normal_at((0., 1., 0.).into());
+    assert_relative_eq!(n, (0., 1., 0.).into());
+
+    let n = s.normal_at((0., 0., 1.).into());
+    assert_relative_eq!(n, (0., 0., 1.).into());
+
+    let a = 3.0f32.sqrt().recip();
+    let n = s.normal_at((a, a, a).into());
+    assert_relative_eq!(n, (a, a, a).into());
+
+    // normals should always be normalized (lol).
+    assert_relative_eq!(n, n.normalize());
+}
+
+#[test]
+fn normal_at_transformed_sphere() {
+    let s = Sphere::new().with_transform(Mat4::new_translation((0., 1., 0.).into()));
+
+    let n = s.normal_at((0., consts::FRAC_1_SQRT_2 + 1.0, -consts::FRAC_1_SQRT_2).into());
+    assert_relative_eq!(
+        n,
+        (0.0, consts::FRAC_1_SQRT_2, -consts::FRAC_1_SQRT_2).into()
+    );
+
+    let s = Sphere::new().with_transform(
+        Mat4::identity()
+            .rotate_z(consts::PI / 5.0)
+            .scale((1., 0.5, 1.0).into()),
+    );
+
+    let n = s.normal_at((0., consts::FRAC_1_SQRT_2, -consts::FRAC_1_SQRT_2).into());
+    assert_relative_eq!(n, (0.0, 0.97014, -0.24254).into());
 }

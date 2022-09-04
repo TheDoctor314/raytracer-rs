@@ -4,7 +4,7 @@ use crate::{
     hit_list::{HitList, HitRec},
     matrix::Mat4,
     ray::Ray,
-    vec3::Point3,
+    vec3::{Point3, Vec3},
 };
 
 /// Representation of a sphere and its associated transform.
@@ -57,6 +57,22 @@ impl Sphere {
 
             HitList::new(vec![t1, t2])
         }
+    }
+
+    /// Returns the normal at a point on the sphere.
+    pub fn normal_at(&self, point: Point3) -> Vec3 {
+        let object_point = &self.transform_inv * point;
+        let object_normal = object_point - Point3::default();
+
+        let mut world_normal = &self.transform_inv.transpose() * object_normal;
+
+        // this is a bit of a hack because we should technically be multiplying by
+        // the transpose inverse of the submatrix of the transform to disregard
+        // any translation. But, we avoid all that by simply setting the last field of the vector
+        // to zero.
+        world_normal[3] = 0.0;
+
+        world_normal.normalize()
     }
 }
 
