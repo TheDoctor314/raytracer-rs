@@ -133,6 +133,11 @@ impl Vec3 {
 
         res
     }
+
+    /// Reflects the vector around the given normal.
+    pub fn reflect(&self, n: Vec3) -> Self {
+        *self - n * self.dot(n) * 2.0
+    }
 }
 
 impl From<(f32, f32, f32)> for Vec3 {

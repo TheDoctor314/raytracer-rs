@@ -108,3 +108,16 @@ fn cross() {
     assert_relative_eq!(a.cross(b), Vec3::new(-1., 2., -1.));
     assert_relative_eq!(b.cross(a), Vec3::new(1., -2., 1.));
 }
+
+#[test]
+fn reflection() {
+    use std::f32::consts::FRAC_1_SQRT_2;
+
+    let v = Vec3::new(1., -1., 0.);
+    let n = Vec3::new(0., 1., 0.);
+    assert_relative_eq!(v.reflect(n), (1., 1., 0.).into());
+
+    let v = Vec3::new(0., -1., 0.);
+    let n = Vec3::new(FRAC_1_SQRT_2, FRAC_1_SQRT_2, 0.);
+    assert_relative_eq!(v.reflect(n), (1., 0., 0.).into());
+}
