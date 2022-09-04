@@ -1,6 +1,11 @@
 use raytracer_rs::{ray::Ray, sphere::Sphere, vec3::Point3};
 
 fn main() {
+    let mut args = std::env::args();
+    args.next();
+
+    let file = args.next().expect("Output file name expected");
+
     let width = 400;
     let height = 400;
     let mut canvas = image::Rgb32FImage::new(width, height);
@@ -32,5 +37,5 @@ fn main() {
 
     let canvas = image::DynamicImage::ImageRgb32F(canvas).to_rgb8();
 
-    canvas.save("ch5.png").unwrap();
+    canvas.save(&file).unwrap();
 }
