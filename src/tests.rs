@@ -7,6 +7,7 @@ mod matrix;
 mod ray;
 mod sphere;
 mod vec3;
+mod world;
 
 use approx::assert_relative_eq;
 
