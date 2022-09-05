@@ -1,4 +1,6 @@
-use raytracer_rs::{ray::Ray, sphere::Sphere, vec3::Point3};
+use raytracer_rs::{
+    lights::PointLight, material::Material, ray::Ray, sphere::Sphere, vec3::Point3,
+};
 
 fn main() {
     let mut args = std::env::args();
@@ -9,14 +11,18 @@ fn main() {
     let width = 400;
     let height = 400;
     let mut canvas = image::Rgb32FImage::new(width, height);
-    let pixel: image::Rgb<f32> = [1.0, 0.0, 0.0].into();
 
     let wall_z = 10.0;
     let wall_size = 7.0;
     let half_wall = wall_size / 2.0;
 
     let pixel_size = wall_size / width as f32;
-    let s = Sphere::default();
+
+    let material = Material::default().with_color([1., 0.2, 1.].into());
+    let s = Sphere::new(material);
+
+    let light = PointLight::new((-10., 10., -10.), [1., 1., 1.]);
+
     let ray_origin = Point3::new(0.0, 0.0, -5.0);
 
     for y in 0..width {
@@ -29,8 +35,14 @@ fn main() {
 
             let mut xs = s.intersect(&ray);
 
-            if xs.hit().is_some() {
-                canvas.put_pixel(x, y, pixel)
+            if let Some(hit) = xs.hit() {
+                let point = ray.pos(hit.t);
+                let normal = hit.obj.normal_at(point);
+                let eye = -*ray.dir();
+
+                let color = hit.obj.material().lighting(&light, point, eye, normal);
+
+                canvas.put_pixel(x, y, color.into_inner());
             }
         }
     }
