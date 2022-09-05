@@ -88,6 +88,11 @@ impl Sphere {
     pub fn material(&self) -> &Material {
         &self.material
     }
+
+    /// Gets a mutable reference to the material.
+    pub fn material_mut(&mut self) -> &mut Material {
+        &mut self.material
+    }
 }
 
 impl Default for Sphere {
