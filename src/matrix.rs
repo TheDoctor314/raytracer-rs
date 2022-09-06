@@ -279,6 +279,29 @@ impl Mat4 {
     pub fn shear(self, dx_y: f32, dx_z: f32, dy_x: f32, dy_z: f32, dz_x: f32, dz_y: f32) -> Self {
         Self::new_shearing(dx_y, dx_z, dy_x, dy_z, dz_x, dz_y) * &self
     }
+
+    /// Returns a transform for orienting the view.
+    /// We pretend to transform the eye, but transform the world instead.
+    ///
+    /// Note: The `up` vector does not need to be exactly perpedicular
+    /// and can be an approximate direction.
+    pub fn view_transform(from: Point3, to: Point3, up: Vec3) -> Self {
+        let forward = (to - from).normalize();
+        let left = forward.cross(up.normalize());
+        let true_up = left.cross(forward);
+
+        let orientation: Mat4 = [
+            [left.x(), left.y(), left.z(), 0.0],
+            [true_up.x(), true_up.y(), true_up.z(), 0.0],
+            [-forward.x(), -forward.y(), -forward.z(), 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
+        .into();
+
+        let transform = Mat4::new_translation((-from.x(), -from.y(), -from.z()).into());
+
+        orientation * &transform
+    }
 }
 
 /// Helper function to calculate the determinant of 2x2 matrix.

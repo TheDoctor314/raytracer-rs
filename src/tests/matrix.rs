@@ -360,3 +360,54 @@ fn chained_transforms() {
 
     assert_relative_eq!(&transform * p, p4);
 }
+
+#[test]
+fn default_view() {
+    let from = Point3::default();
+    let to = Point3::new(0., 0., -1.);
+    let up = Vec3::new(0., 1., 0.);
+
+    assert_relative_eq!(Mat4::view_transform(from, to, up), Mat4::identity());
+}
+
+#[test]
+fn view_looking_toward_positive_z() {
+    let from = Point3::default();
+    let to = Point3::new(0., 0., 1.);
+    let up = Vec3::new(0., 1., 0.);
+
+    assert_relative_eq!(
+        Mat4::view_transform(from, to, up),
+        Mat4::new_scaling((-1., 1., -1.).into())
+    );
+}
+
+#[test]
+fn view_transform_moves_the_world() {
+    let from = Point3::new(0., 0., 8.);
+    let to = Point3::new(0., 0., 0.);
+    let up = Vec3::new(0., 1., 0.);
+
+    assert_relative_eq!(
+        Mat4::view_transform(from, to, up),
+        Mat4::new_translation((0., 0., -8.).into())
+    );
+}
+
+#[test]
+fn arbitrary_view_transform() {
+    let from = Point3::new(1., 3., 2.);
+    let to = Point3::new(4., -2., 8.);
+    let up = Vec3::new(1., 1., 0.);
+
+    assert_relative_eq!(
+        Mat4::view_transform(from, to, up),
+        [
+            [-0.50709, 0.50709, 0.67612, -2.36643],
+            [0.76772, 0.60609, 0.12122, -2.82843],
+            [-0.35857, 0.59761, -0.71714, 0.0],
+            [0., 0., 0., 1.]
+        ]
+        .into()
+    );
+}
