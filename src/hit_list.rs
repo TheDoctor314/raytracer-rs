@@ -104,10 +104,16 @@ impl<'a> ops::IndexMut<usize> for HitList<'a> {
 /// different calculations.
 #[derive(Debug)]
 pub struct HitState<'a> {
+    /// How far along the ray the intersection occurred.
     pub t: f32,
+    /// The object of intersection.
     pub obj: &'a Sphere,
+    /// Point of intersection.
     pub point: Point3,
+    /// Eye vector.
     pub eyev: Vec3,
+    /// Normal at the intersection.
     pub normal: Vec3,
+    /// Whether the hit occurred inside an object.
     pub inside: bool,
 }
