@@ -11,6 +11,7 @@
 
 #![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
 
+pub mod camera;
 pub mod hit_list;
 pub mod lights;
 pub mod material;

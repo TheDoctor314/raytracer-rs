@@ -2,6 +2,7 @@
 //! They are in a separate module so that the whole library
 //! is not recompiled for running tests.
 
+mod camera;
 mod material;
 mod matrix;
 mod ray;
