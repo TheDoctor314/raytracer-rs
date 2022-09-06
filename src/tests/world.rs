@@ -5,7 +5,7 @@ use crate::{
     sphere::Sphere, world::World, Color,
 };
 
-fn default_world() -> World {
+pub fn default_world() -> World {
     let light = PointLight::new((-10., 10., -10.), [1., 1., 1.]);
     let s1 = Sphere::new(
         Material::default()

@@ -3,7 +3,7 @@
 //! The canvas of the camera is always one unit in front of it.
 //! This makes the math cleaner.
 
-use crate::{matrix::Mat4, ray::Ray, vec3::Point3};
+use crate::{matrix::Mat4, ray::Ray, vec3::Point3, world::World};
 
 /// The `Camera` allows us to look at a scene and render it.
 #[derive(Debug)]
@@ -81,5 +81,19 @@ impl Camera {
         let dir = (pixel - orig).normalize();
 
         Ray::new(orig, dir)
+    }
+
+    /// Renders the given scene to the image.
+    pub fn render(&self, world: &World) -> image::Rgb32FImage {
+        let mut canvas = image::Rgb32FImage::new(self.hsize, self.vsize);
+        for y in 0..self.vsize {
+            for x in 0..self.hsize {
+                let ray = self.ray_for_pixel(x, y);
+                let color = world.color_at(&ray);
+                canvas.put_pixel(x, y, color.into_inner());
+            }
+        }
+
+        canvas
     }
 }
