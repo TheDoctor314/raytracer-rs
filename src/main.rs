@@ -1,5 +1,8 @@
+use std::f32::consts::{FRAC_PI_2, FRAC_PI_3, FRAC_PI_4};
+
 use raytracer_rs::{
-    lights::PointLight, material::Material, ray::Ray, sphere::Sphere, vec3::Point3,
+    camera::Camera, lights::PointLight, material::Material, matrix::Mat4, sphere::Sphere,
+    world::World,
 };
 
 fn main() {
@@ -8,45 +11,65 @@ fn main() {
 
     let file = args.next().expect("Output file name expected");
 
-    let width = 400;
-    let height = 400;
-    let mut canvas = image::Rgb32FImage::new(width, height);
+    let floor = Sphere::new(
+        Material::default()
+            .with_color([1., 0.9, 0.9].into())
+            .with_specular(0.0),
+    )
+    .with_transform(Mat4::new_scaling((10., 0.01, 10.0).into()));
 
-    let wall_z = 10.0;
-    let wall_size = 7.0;
-    let half_wall = wall_size / 2.0;
+    let left_wall = Sphere::new(floor.material().clone()).with_transform(
+        Mat4::new_scaling((10., 0.01, 10.).into())
+            .rotate_x(FRAC_PI_2)
+            .rotate_y(-FRAC_PI_4)
+            .translate((0., 0., 5.).into()),
+    );
+    let right_wall = Sphere::new(floor.material().clone()).with_transform(
+        Mat4::new_scaling((10., 0.01, 10.).into())
+            .rotate_x(FRAC_PI_2)
+            .rotate_y(FRAC_PI_4)
+            .translate((0., 0., 5.).into()),
+    );
 
-    let pixel_size = wall_size / width as f32;
+    let middle = Sphere::new(
+        Material::default()
+            .with_color([0.1, 1., 0.5].into())
+            .with_diffuse(0.7)
+            .with_specular(0.3),
+    )
+    .with_transform(Mat4::new_translation((-0.5, 1., 0.5).into()));
 
-    let material = Material::default().with_color([1., 0.2, 1.].into());
-    let s = Sphere::new(material);
+    let right = Sphere::new(
+        Material::default()
+            .with_color([0.5, 1., 0.1].into())
+            .with_diffuse(0.7)
+            .with_specular(0.3),
+    )
+    .with_transform(Mat4::new_scaling((0.5, 0.5, 0.5).into()).translate((1.5, 0.5, -0.5).into()));
+
+    let left = Sphere::new(
+        Material::default()
+            .with_color([1., 0.8, 0.1].into())
+            .with_diffuse(0.7)
+            .with_specular(0.3),
+    )
+    .with_transform(
+        Mat4::new_scaling((0.333, 0.333, 0.333).into()).translate((-1.5, 0.333, -0.75).into()),
+    );
 
     let light = PointLight::new((-10., 10., -10.), [1., 1., 1.]);
+    let world = World::new(
+        vec![floor, left_wall, right_wall, middle, right, left],
+        vec![light],
+    );
 
-    let ray_origin = Point3::new(0.0, 0.0, -5.0);
+    let camera = Camera::new(400, 200, FRAC_PI_3).with_transform(Mat4::view_transform(
+        (0., 1.5, -5.).into(),
+        (0., 1., 0.).into(),
+        (0., 1., 0.).into(),
+    ));
 
-    for y in 0..width {
-        let world_y = half_wall - pixel_size * y as f32;
-
-        for x in 0..height {
-            let world_x = -half_wall + pixel_size * x as f32;
-            let pos = Point3::new(world_x, world_y, wall_z);
-            let ray = Ray::new(ray_origin, (pos - ray_origin).normalize());
-
-            let mut xs = s.intersect(&ray);
-
-            if let Some(hit) = xs.hit() {
-                let point = ray.pos(hit.t);
-                let normal = hit.obj.normal_at(point);
-                let eye = -*ray.dir();
-
-                let color = hit.obj.material().lighting(&light, point, eye, normal);
-
-                canvas.put_pixel(x, y, color.into_inner());
-            }
-        }
-    }
-
+    let canvas = camera.render(&world);
     let canvas = image::DynamicImage::ImageRgb32F(canvas).to_rgb8();
 
     canvas.save(&file).unwrap();
